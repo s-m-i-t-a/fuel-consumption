@@ -1,0 +1,8 @@
+# Elm packages and build artifacts
+elm-stuff
+build/
+
+tags
+.vimrc
+.envs
+.projections.json
