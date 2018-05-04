@@ -2,4 +2,7 @@ module Types exposing (Msg(..))
 
 
 type Msg
-    = NoOp
+    = InputDistance String
+    | BlurDistance
+    | InputFueled String
+    | BlurFueled
