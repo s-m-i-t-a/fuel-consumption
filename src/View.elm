@@ -1,10 +1,11 @@
 module View exposing (view)
 
-import Html exposing (Html, h1, div, label, text, span, strong, form, input)
-import Html.Attributes exposing (class, value)
-import Html.Events exposing (onInput, onBlur)
+import Html exposing (Html, h1, div, label, text, span, strong, form, input, button)
+import Html.Attributes exposing (class, value, disabled, novalidate, type_)
+import Html.Events exposing (onInput, onBlur, onSubmit)
 import Round
 import Validation exposing (Field, rawValue, extractError)
+import Validators exposing (isValidField)
 import Model exposing (Model)
 import Types exposing (Msg(..))
 
@@ -32,11 +33,19 @@ head model =
 body : Model -> Html Msg
 body model =
     form
-        []
+        [ onSubmit Submit
+        , novalidate True
+        ]
         [ div
             [ class "grid-container" ]
             [ inputField "Distance" "km" InputDistance BlurDistance model.distance
             , inputField "Fueled" "l" InputFueled BlurFueled model.fueled
+            , button
+                [ class "button"
+                , type_ "submit"
+                , disabled (not (isValidField model.distance && isValidField model.fueled))
+                ]
+                [ text "Calculate" ]
             , result model
             ]
         ]
@@ -95,9 +104,7 @@ result { consumption } =
                         [ text ("Average consumption is " ++ (Round.round 2 value) ++ " liters per 100 km.") ]
 
                 Nothing ->
-                    div
-                        [ class "callout warning" ]
-                        [ text "Please enter the values for the calculation." ]
+                    text ""
     in
         div
             [ class "grid-x grid-margin-x" ]

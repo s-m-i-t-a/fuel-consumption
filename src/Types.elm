@@ -6,3 +6,4 @@ type Msg
     | BlurDistance
     | InputFueled String
     | BlurFueled
+    | Submit

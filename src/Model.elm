@@ -1,6 +1,7 @@
-module Model exposing (Model, init, calculateConsumption)
+module Model exposing (Model, init, calculateConsumption, validateModel, validateDistance, validateFueled)
 
-import Validation exposing (Field, Validity(..), field, validity, (|:))
+import Validation exposing (Field, Event(..), Validity(..), field, validate, validity, (|:))
+import MyValidators exposing (distanceValidator, fueledValidator)
 
 
 type alias Model =
@@ -8,6 +9,14 @@ type alias Model =
     , fueled : Field String Float
     , consumption : Maybe Float
     }
+
+
+type alias DistanceModel m =
+    { m | distance : Field String Float }
+
+
+type alias FueledModel m =
+    { m | fueled : Field String Float }
 
 
 init : Model
@@ -37,3 +46,25 @@ calculateConsumption ({ distance, fueled } as model) =
 
             _ ->
                 { model | consumption = Nothing }
+
+
+validateDistance : Event String -> DistanceModel m -> DistanceModel m
+validateDistance event model =
+    { model | distance = validate event distanceValidator model.distance }
+
+
+validateFueled : Event String -> FueledModel m -> FueledModel m
+validateFueled event model =
+    { model | fueled = validate event fueledValidator model.fueled }
+
+
+validateModel : Model -> Model
+validateModel model =
+    let
+        distance =
+            validate OnSubmit distanceValidator model.distance
+
+        fueled =
+            validate OnSubmit fueledValidator model.fueled
+    in
+        { model | distance = distance, fueled = fueled }

@@ -1,34 +1,32 @@
 module Update exposing (update)
 
-import Validation exposing (validate, Event(..))
+import Validation exposing (Event(..))
 import Types exposing (Msg(..))
-import Model exposing (Model, calculateConsumption)
-import MyValidators exposing (distanceValidator, fueledValidator)
+import Model exposing (Model, calculateConsumption, validateModel, validateDistance, validateFueled)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         InputDistance d ->
-            ( { model | distance = validate (OnChange d) distanceValidator model.distance }
-                |> calculateConsumption
+            ( model |> validateDistance (OnChange d)
             , Cmd.none
             )
 
         BlurDistance ->
-            ( { model | distance = validate OnBlur distanceValidator model.distance }
-                |> calculateConsumption
+            ( model |> validateDistance OnBlur
             , Cmd.none
             )
 
         InputFueled f ->
-            ( { model | fueled = validate (OnChange f) fueledValidator model.fueled }
-                |> calculateConsumption
+            ( model |> validateFueled (OnChange f)
             , Cmd.none
             )
 
         BlurFueled ->
-            ( { model | fueled = validate OnBlur fueledValidator model.fueled }
-                |> calculateConsumption
+            ( model |> validateFueled OnBlur
             , Cmd.none
             )
+
+        Submit ->
+            ( model |> validateModel |> calculateConsumption, Cmd.none )
